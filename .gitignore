@@ -1,2 +1,4 @@
-./idea
+idea/
 .db
+__pycache__/
+.pyc

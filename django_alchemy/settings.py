@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'users',
-    'api'
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -71,7 +71,8 @@ WSGI_APPLICATION = 'django_alchemy.wsgi.application'
 
 
 # Database
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'app.db')
+
+DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'app.db')
 
 
 # Password validation

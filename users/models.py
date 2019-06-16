@@ -22,6 +22,8 @@ class User(Base):
     email = Column(String(255))
     password = Column(String(255))
     auth_token = relationship("AuthToken", uselist=False, back_populates="user")
+    city_id = Column(Integer, ForeignKey('city.id'))
+    city = relationship("City", back_populates="user")
 
     def __repr__(self):
         return "<User(first_name='%s', second_name='%s', email='%s')>" % (
@@ -39,21 +41,29 @@ class User(Base):
         self.password = password_hash_hexdigest
 
 
+class City(Base):
+    __tablename__ = 'city'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(255))
+    user = relationship("User", back_populates="city")
+
+
 class AuthToken(Base):
     __tablename__ = 'auth_token'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     access_token = Column(String(255), nullable=True)
-    refresh_token = Column(String(255), nullable=True)
     access_token_expiration_date = Column(DateTime, nullable=True)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship("User", back_populates="auth_token")
 
     def __repr__(self):
-        return "<AuthToken(user_id='%s', access_token='%s', refresh_token='%s')>" % (
-            self.user_id, self.access_token, self.refresh_token)
+        return "<AuthToken(user_id='%s', access_token='%s')>" % (
+            self.user_id, self.access_token)
 
-    def _update_access_token(self):
+    # создание нового токена и расчет его время жизни
+    def create_access_token(self):
         access_token = str(uuid.uuid4())
         self.access_token = access_token
 
@@ -61,26 +71,15 @@ class AuthToken(Base):
             minutes=settings.ACCESS_TOKEN_EXPIRATION_DELTA_MINUTES)
         self.access_token_expiration_date = access_token_exiparation_data
 
-    def _update_refresh_token(self):
-        refresh_token = str(uuid.uuid4())
-        self.refresh_token = refresh_token
-
-    def update_access_and_refresh_tokens(self):
-        self._update_access_token()
-        self._update_refresh_token()
-
-    def update_access_token(self, refresh_token):
-        if self.refresh_token == refresh_token:
-            self._update_access_token()
-            return self.access_token
-        return None
-
-    def verify_access_token(self, access_token):
-        if access_token == self.access_token:
+    # верификация токена (проверка на совпадение и по времени жизни)
+    def verify_access_token(self):
+        datetime_now = datetime.datetime.now()
+        if datetime_now < self.access_token_expiration_date:
             return True
         else:
             return False
 
-    def delete_access_and_refresh_tokens(self):
+    # удаление токена
+    def delete_access_tokens(self):
         self.access_token = None
-        self.refresh_token = None
+

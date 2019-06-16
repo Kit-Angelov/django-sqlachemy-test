@@ -71,11 +71,8 @@ WSGI_APPLICATION = 'django_alchemy.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
-
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'app.db')
-SQLALCHEMY_MIGRATE_REPO = os.path.join(BASE_DIR, 'db_repository')
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -114,5 +111,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# authorization settings
 
 ACCESS_TOKEN_EXPIRATION_DELTA_MINUTES = 5

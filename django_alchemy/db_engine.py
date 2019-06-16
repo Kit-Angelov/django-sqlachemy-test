@@ -11,3 +11,4 @@ engine = create_engine(settings.SQLALCHEMY_DATABASE_URI, echo=True)
 
 DBSession = sessionmaker()
 DBSession.configure(bind=engine)
+

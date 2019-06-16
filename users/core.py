@@ -17,9 +17,9 @@ def login(email, password):
     return user
 
 
-def logout(access_token):
-    db_session = DBSession()
-    auth_token = db_session.query(AuthToken).filter_by(access_token=access_token).first()
+def logout(user):
+    db_session = DBSession.object_session(user)
+    auth_token = user.auth_token
     if auth_token:
         auth_token.delete_access_and_refresh_tokens()
         db_session.commit()
